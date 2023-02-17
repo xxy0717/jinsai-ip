@@ -1,4 +1,3 @@
-pip==23.0
 streamlit
-pygame
+time
 random
