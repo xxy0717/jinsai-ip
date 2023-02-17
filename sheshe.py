@@ -1,54 +1,97 @@
-import pygame
+import streamlit as st
+import time
 import random
 
-# 初始化 Pygame 库
-pygame.init()
+# 游戏画面参数
+ROWS = 30
+COLS = 30
+CELL_SIZE = 20
 
-# 设置游戏窗口大小
-width, height = 640, 480
-screen = pygame.display.set_mode((width, height))
+# 食物颜色
+FOOD_COLOR = (255, 0, 0)
 
-# 定义贪吃蛇和食物的大小和位置
-snake_size = 10
-snake_x, snake_y = 100, 100
-food_x, food_y = random.randint(0, width), random.randint(0, height)
+# 蛇身颜色
+SNAKE_COLOR = (0, 255, 0)
 
-# 设置游戏循环
-game_over = False
-while not game_over:
-    # 检查游戏事件
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game_over = True
+# 游戏界面背景颜色
+BACKGROUND_COLOR = (0, 0, 0)
 
-    # 清屏
-    screen.fill((255, 255, 255))
+# 定义方向常量
+UP = 0
+RIGHT = 1
+DOWN = 2
+LEFT = 3
 
-    # 绘制贪吃蛇和食物
-    pygame.draw.rect(screen, (0, 255, 0), (snake_x, snake_y, snake_size, snake_size))
-    pygame.draw.rect(screen, (255, 0, 0), (food_x, food_y, snake_size, snake_size))
+# 初始化游戏界面
+game_board = [[0] * COLS for _ in range(ROWS)]
 
-    # 更新屏幕
-    pygame.display.update()
+# 初始化蛇
+snake = [(ROWS // 2, COLS // 2)]
+snake_dir = RIGHT
 
-    # 移动贪吃蛇
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        snake_x -= 10
-    if keys[pygame.K_RIGHT]:
-        snake_x += 10
-    if keys[pygame.K_UP]:
-        snake_y -= 10
-    if keys[pygame.K_DOWN]:
-        snake_y += 10
+# 初始化食物
+food = (random.randint(0, ROWS - 1), random.randint(0, COLS - 1))
 
-    # 检查贪吃蛇是否碰到食物
-    if snake_x == food_x and snake_y == food_y:
-        food_x, food_y = random.randint(0, width), random.randint(0, height)
-        score += 10
+# 更新蛇的位置
+def update_snake(snake, snake_dir):
+    row, col = snake[0]
 
-    # 限制帧速率
-    pygame.time.Clock().tick(30)
+    if snake_dir == UP:
+        row -= 1
+    elif snake_dir == RIGHT:
+        col += 1
+    elif snake_dir == DOWN:
+        row += 1
+    else:
+        col -= 1
 
-# 退出 Pygame 库
-pygame.quit()
+    snake.insert(0, (row, col))
+    return snake[:-1]
+
+# 检查蛇是否吃到了食物
+def check_food(snake, food):
+    return snake[0] == food
+
+# 更新食物的位置
+def update_food(snake):
+    while True:
+        food = (random.randint(0, ROWS - 1), random.randint(0, COLS - 1))
+        if food not in snake:
+            return food
+
+# 检查蛇是否死亡
+def check_death(snake):
+    row, col = snake[0]
+    if row < 0 or row >= ROWS or col < 0 or col >= COLS:
+        return True
+
+    for i in range(1, len(snake)):
+        if snake[i] == snake[0]:
+            return True
+
+    return False
+
+# 画游戏界面
+def draw_game_board(game_board, snake, food):
+    for row in range(ROWS):
+        for col in range(COLS):
+            if (row, col) == food:
+                st.square(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, FOOD_COLOR)
+            elif (row, col) in snake:
+                st.square(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, SNAKE_COLOR)
+            else:
+                st.square(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, BACKGROUND_COLOR)
+
+# Streamlit应用程序
+def app():
+    st.title("贪吃蛇游戏")
+
+    while True:
+        # 游戏界面
+        draw_game_board(game_board, snake, food)
+
+        # 更新蛇的位置
+        snake = update_snake(snake, snake_dir)
+
+        # 如果蛇吃到了食物，更新食物的位置
+        if check_food(snake, food):
