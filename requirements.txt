@@ -1,3 +1,4 @@
 streamlit
 pygame
+pip==23.0
 random==23.0
