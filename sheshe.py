@@ -51,4 +51,7 @@ def generate_new_tetromino():
 def check_if_tetromino_can_move_down():
     global game_board, current_tetromino, current_tetromino_pos
     next_tetromino_pos = current_tetromino_pos + np.array([1, 0])
-    if check_if_tetromino_is
+    if check_if_tetromino_is_on_board(next_tetromino_pos, current_tetromino["shape"], game_board):
+        return True
+    else:
+        return False
