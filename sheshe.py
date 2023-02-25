@@ -48,4 +48,4 @@ def generate_new_tetromino():
     next_tetromino = np.random.choice(tetrominoes)
 
 # 定义一个函数，用于检查当前方块是否可以向下移动
-def check_if_tetromino_can_move_down
+def check_if_tetromino_can_move_down():
