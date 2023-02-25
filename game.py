@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # 导入你的游戏代码和依赖
-from sheshe import *
+from sheshe import get_random_tetromino
 
 # 设置游戏区域的大小和方格的大小
 GRID_SIZE = 20
