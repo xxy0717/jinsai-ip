@@ -55,3 +55,18 @@ def check_if_tetromino_can_move_down():
         return True
     else:
         return False
+
+def check_if_tetromino_can_move_left(board, tetromino):
+    """判断当前方块是否可以向左移动。"""
+    for x, y in tetromino:
+        if x == 0 or board[y][x-1] != -1:
+            return False
+    return True
+
+def check_if_tetromino_can_move_right(board, tetromino):
+    """判断当前方块是否可以向右移动。"""
+    for x, y in tetromino:
+        if x == BOARD_WIDTH - 1 or board[y][x+1] != -1:
+            return False
+    return True
+    
