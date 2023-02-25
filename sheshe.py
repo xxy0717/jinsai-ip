@@ -49,3 +49,6 @@ def generate_new_tetromino():
 
 # 定义一个函数，用于检查当前方块是否可以向下移动
 def check_if_tetromino_can_move_down():
+    global game_board, current_tetromino, current_tetromino_pos
+    next_tetromino_pos = current_tetromino_pos + np.array([1, 0])
+    if check_if_tetromino_is
