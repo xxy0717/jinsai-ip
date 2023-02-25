@@ -1,75 +1,67 @@
-import streamlit as st
-import numpy as np
-import time
+import pygame
+import random
 
-# 导入你的游戏代码和依赖
-from sheshe import generate_new_tetromino
+# 初始化Pygame库
+pygame.init()
 
-# 设置游戏区域的大小和方格的大小
-GRID_SIZE = 20
-BOARD_WIDTH = 10
-BOARD_HEIGHT = 20
+# 定义屏幕大小
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 800
 
-# 初始化游戏区域和当前方块
-game_board = np.zeros((BOARD_HEIGHT, BOARD_WIDTH), dtype=np.int32)
-current_tetromino = generate_new_tetromino()
+# 定义颜色
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
-# 记录游戏是否结束
-game_over = False
+# 定义方块大小
+BLOCK_SIZE = 20
 
-# 用于控制游戏速度的时间间隔
-game_speed = 0.5
+# 创建屏幕
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# 绘制游戏区域
-def draw_game_board(game_board):
-    for i in range(game_board.shape[0]):
-        for j in range(game_board.shape[1]):
-            if game_board[i, j] != 0:
-                st.markdown(f'<div style="background-color:{TETROMINO_COLORS[game_board[i, j]]}; height:{GRID_SIZE}px; width:{GRID_SIZE}px; display:inline-block;"></div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div style="background-color:gray; height:{GRID_SIZE}px; width:{GRID_SIZE}px; display:inline-block;"></div>', unsafe_allow_html=True)
-    st.write("")
+# 定义方块类
+class Block:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+    def move_down(self):
+        self.y += BLOCK_SIZE
+
+    def draw(self):
+        pygame.draw.rect(screen, self.color, [self.x, self.y, BLOCK_SIZE, BLOCK_SIZE])
+
+# 创建方块列表
+blocks = []
+for i in range(10):
+    blocks.append(Block(random.randint(0, SCREEN_WIDTH-BLOCK_SIZE), random.randint(0, SCREEN_HEIGHT-BLOCK_SIZE)))
 
 # 游戏循环
-while not game_over:
+running = True
+while running:
+    # 事件循环
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    # 清空输出区域
-    st.empty()
+    # 填充屏幕
+    screen.fill(BLACK)
 
-    # 检查是否可以移动当前方块
-    can_move_down = check_if_tetromino_can_move_down()
-    can_move_left = check_if_tetromino_can_move_left()
-    can_move_right = check_if_tetromino_can_move_right()
+    # 绘制方块
+    for block in blocks:
+        block.move_down()
+        block.draw()
 
-    # 绘制游戏区域和当前方块
-    draw_game_board(game_board)
-    draw_tetromino(current_tetromino, game_board)
+        # 判断方块是否超出屏幕
+        if block.y > SCREEN_HEIGHT:
+            blocks.remove(block)
+            blocks.append(Block(random.randint(0, SCREEN_WIDTH-BLOCK_SIZE), random.randint(-SCREEN_HEIGHT, -BLOCK_SIZE)))
 
-    # 显示控制按钮
-    st.write("")
+    # 更新屏幕
+    pygame.display.flip()
 
-    if st.button("向左移动") and can_move_left:
-        move_tetromino_left()
-    if st.button("向右移动") and can_move_right:
-        move_tetromino_right()
-    if st.button("向下移动") and can_move_down:
-        move_tetromino_down()
-    if st.button("旋转方块"):
-        rotate_tetromino()
-
-    # 移动当前方块并更新游戏区域
-    if can_move_down:
-        move_tetromino_down()
-    else:
-        add_tetromino_to_board()
-        remove_completed_rows()
-        current_tetromino = generate_new_tetromino()
-
-        if check_if_game_over():
-            game_over = True
-
-    # 等待一段时间，控制游戏速度
-    time.sleep(game_speed)
-
-# 游戏结束
-st.write("游戏结束")
+# 退出Pygame库
+pygame.quit()
