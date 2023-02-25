@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # 导入你的游戏代码和依赖
-from sheshe import get_random_tetromino
+from sheshe import generate_new_tetromino
 
 # 设置游戏区域的大小和方格的大小
 GRID_SIZE = 20
@@ -12,7 +12,7 @@ BOARD_HEIGHT = 20
 
 # 初始化游戏区域和当前方块
 game_board = np.zeros((BOARD_HEIGHT, BOARD_WIDTH), dtype=np.int32)
-current_tetromino = get_random_tetromino()
+current_tetromino = generate_new_tetromino()
 
 # 记录游戏是否结束
 game_over = False
@@ -63,7 +63,7 @@ while not game_over:
     else:
         add_tetromino_to_board()
         remove_completed_rows()
-        current_tetromino = get_random_tetromino()
+        current_tetromino = generate_new_tetromino()
 
         if check_if_game_over():
             game_over = True
